@@ -6,11 +6,14 @@ DOCKER_COMPOSE_FILE = $(SRC_DIR)/docker-compose.yaml
 
 DOCKER_COMPOSE = sudo docker-compose -f $(DOCKER_COMPOSE_FILE)
 
+VOLUME_MOUNTPOINT = /Users/ijinhong/data
+
 $(NAME) : all
 
 all : up
 
 clean : stop
+	rm -rf $(VOLUME_MOUNTPOINT)
 	docker rm $$(docker ps -qa); \
 	docker rmi -f $$(docker images -qa); \
 	docker volume rm $$(docker volume ls -q) || \
@@ -19,11 +22,13 @@ clean : stop
 
 re : clean
 	docker pull alpine:3.16.5
+	mkdir -p $(VOLUME_MOUNTPOINT)/mariadb $(VOLUME_MOUNTPOINT)/wordpress
 	$(DOCKER_COMPOSE) build --no-cache
-	make up
+	$(DOCKER_COMPOSE) up -d
 
 up :
 	docker pull alpine:3.16.5
+	mkdir -p $(VOLUME_MOUNTPOINT)/mariadb $(VOLUME_MOUNTPOINT)/wordpress
 	$(DOCKER_COMPOSE) up -d --build
 
 down :
@@ -38,13 +43,4 @@ restart :
 stop :
 	$(DOCKER_COMPOSE) stop
 
-install:
-	echo "INSTALL DOCKER"
-	curl -fsSL https://get.docker.com -o get-docker.sh
-	sudo sh get-docker.sh
-	echo "INSTALL DOCKER-COMPOSE"
-	sudo curl -SL "https://github.com/docker/compose/releases/download/v2.15.1/docker-compose-$(shell uname -s)-$(shell uname -m)" -o /usr/local/bin/docker-compose
-	sudo chmod +x /usr/local/bin/docker-compose
-	sudo docker-compose --version
-
-.PHONY: all clean re up down start restart stop insatll
+.PHONY: all clean re up down start restart stop

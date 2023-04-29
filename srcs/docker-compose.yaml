@@ -4,13 +4,11 @@ services:
   mariadb:
     container_name: "mariadb"
     build:
-      context: ./mariadb
+      context: ./requirements/mariadb
       dockerfile: Dockerfile
     restart: on-failure
     networks:
       - wordpress-mariadb
-    ports:
-      - 3306:3306
     volumes:
       - mariadb-volume:/var/lib/mysql
     env_file:
@@ -19,7 +17,7 @@ services:
   wordpress:
     container_name: "wordpress"
     build:
-      context: ./wordpress
+      context: ./requirements/wordpress
       dockerfile: Dockerfile
     restart: on-failure
     depends_on:
@@ -27,8 +25,6 @@ services:
     networks:
       - nginx-wordpress
       - wordpress-mariadb
-    ports:
-      - 9000:9000
     volumes:
       - wordpress-volume:/var/www/html
     env_file:
@@ -37,7 +33,7 @@ services:
   nginx:
     container_name: "nginx"
     build:
-      context: ./nginx
+      context: ./requirements/nginx
       dockerfile: Dockerfile
     depends_on:
       - mariadb
@@ -60,4 +56,14 @@ networks:
 
 volumes:
   mariadb-volume:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /Users/ijinhong/data/mariadb
   wordpress-volume:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /Users/ijinhong/data/wordpress

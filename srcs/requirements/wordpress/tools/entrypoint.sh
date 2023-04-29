@@ -21,7 +21,6 @@ if [ ! -d "/var/www/html/wp" ]; then
     define( 'DB_NAME', '${MYSQL_DATABASE}' ); \
     define( 'DB_USER', '${MYSQL_ADMIN_USER}' ); \
     define( 'DB_PASSWORD', '${MYSQL_ADMIN_PASSWORD}' ); \n$(cat /wp-config.php)" > /wp-config.php
-    cat /wp-config.php
     mv /wp-config.php /var/www/html/wp
 
     # WP INSTALL with WP CLI
